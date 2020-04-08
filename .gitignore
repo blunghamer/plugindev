@@ -1,0 +1,7 @@
+.vagrant/
+*.jar
+*.rpm
+*.ks
+*.ini
+*.py
+*.properties

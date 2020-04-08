@@ -1,0 +1,32 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+  - name: Install java 8 jdk for esf
+    apt:
+      name: openjdk-8-jdk
+      state: present
+  - name: rest of rpm for debian systems dependencies
+    apt:
+      pkg: 
+      - rpm 
+      - dos2unix 
+      - ethtool 
+      - hostapd 
+      - isc-dhcp-server 
+      - iw 
+      - telnet 
+      - unzip 
+      - wireless-tools
+  - name: check if rules file exists
+    stat: 
+      path: /opt/eurotech/esf/user
+    register: esf_already_installed
+  - name: Install ESF from raspi image
+    shell:
+      cmd: rpm -ivh --nodeps esf-raspberry-pi-2-nn-6.1.0-1.noarch.rpm
+      chdir: /vagrant
+    when: esf_already_installed.stat.exists == False
+  - name: Ensure we have eth0 interface name, standard config in esf otherwise esf will not start at all
+    shell:
+      cmd: ip link add name eth0 link ens5 type macvlan
